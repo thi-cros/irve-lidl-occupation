@@ -1,9 +1,9 @@
 name: Relevé occupation IRVE
 
 on:
+  workflow_dispatch:  # permet de lancer manuellement depuis l'onglet Actions, pratique pour tester
   schedule:
     - cron: "*/30 * * * *"
-  workflow_dispatch:  # permet de lancer manuellement depuis l'onglet Actions, pratique pour tester
 
 jobs:
   releve:
