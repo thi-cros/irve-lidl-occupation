@@ -1,6 +1,5 @@
 import requests, csv, os, io
 from datetime import datetime, timezone
-from zoneinfo import ZoneInfo
 
 CSV_URL = "https://www.data.gouv.fr/api/1/datasets/r/89185b1f-f958-4c5b-9282-399a66ecee97"
 
@@ -33,7 +32,7 @@ def get_last_horodatage(pdc_id):
         for row in csv.DictReader(f):
             if row["id_pdc_itinerance"] == pdc_id:
                 last_value = row["horodatage"]
-    return datetime.fromisoformat(last_value) if last_value else None
+    return last_value
 
 
 def main():
@@ -51,14 +50,12 @@ def main():
                 print(f"[{pdc}] absent du fichier téléchargé")
                 continue
             ts = row.get("horodatage")
-            ts_utc = datetime.fromisoformat(ts)
-            ts_paris = ts_utc.astimezone(ZoneInfo("Europe/Paris"))
-            if ts_paris != get_last_horodatage(pdc):
+            if ts != get_last_horodatage(pdc):
                 ts_releve = datetime.now(timezone.utc).isoformat()
-                writer.writerow([ts_releve, pdc, ts_paris, row.get("etat_pdc"), row.get("occupation_pdc")])
-                print(f"[{pdc}] changement -> {ts_paris}")
+                writer.writerow([ts_releve, pdc, ts, row.get("etat_pdc"), row.get("occupation_pdc")])
+                print(f"[{pdc}] changement -> {ts}")
             else:
-                print(f"[{pdc}] pas de changement ({ts_paris})")
+                print(f"[{pdc}] pas de changement ({ts})")
 
 
 if __name__ == "__main__":
